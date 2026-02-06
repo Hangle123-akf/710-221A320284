@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài Tập 3: Countdown Timer</title>
+    <style>
+        /* Toàn bộ giao diện */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        /* Header màu xanh dương */
+        header {
+            background-color: #60aba1;
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+
+        header p {
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+
+        /* Phần nội dung chính */
+        .main-content {
+            flex: 1;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .section-title {
+            color: #3b66d4;
+            font-size: 1.8rem;
+            border-bottom: 2px solid #ca5ca9;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* Card đồng hồ đếm ngược */
+        .timer-container {
+            background-color: #a8509e;
+            border-radius: 10px;
+            padding: 50px 20px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .status-label {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .timer-display {
+            font-size: 8rem;
+            font-weight: bold;
+            letter-spacing: 10px;
+            margin: 20px 0;
+        }
+
+        .instruction {
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        /* Các nút điều khiển */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #3b66d4;
+            background-color: white;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #e6e6e6;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Hiệu ứng nhấp nháy khi dưới 1 phút */
+        .warning {
+            animation: blink 1s infinite;
+            color: #ffcccc;
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* Footer màu xanh đậm */
+        footer {
+            background-color: #1e3a8a;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        footer p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Bài Tập 3: Countdown Timer</h1>
+        <p>Đồng hồ đếm ngược với animation</p>
+    </header>
+
+    <main class="main-content">
+        <h2 class="section-title">Bộ Đếm Thời Gian</h2>
+        
+        <div class="timer-container">
+            <div class="status-label">Thời gian còn lại:</div>
+            <div id="display" class="timer-display">10 : 00</div>
+            <div class="instruction">Nhấn "Bắt Đầu" để khởi động</div>
+            
+            <div class="controls">
+                <button onclick="startTimer()">Bắt Đầu</button>
+                <button onclick="pauseTimer()">Tạm Dừng</button>
+                <button onclick="resetTimer()">reset</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>© Bài thi cuối kì</p>
+        <p>Bài Tập 3: Countdown Timer</p>
+    </footer>
+
+    <script>
+        let totalSeconds = 10 * 60; 
+        let timerInterval = null;
+        const display = document.getElementById("display");
+
+        function updateDisplay() {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            
+            display.textContent = 
+                String(minutes).padStart(2, "0") + " : " + 
+                String(seconds).padStart(2, "0");
+
+            // Thêm hiệu ứng cảnh báo nếu dưới 60 giây
+            if (totalSeconds <= 60 && totalSeconds > 0) {
+                display.classList.add("warning");
+            } else {
+                display.classList.remove("warning");
+            }
+        }
+
+        function startTimer() {
+            if (timerInterval) return; // Tránh chạy lặp nhiều interval
+
+            timerInterval = setInterval(() => {
+                if (totalSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    alert("Hết thời gian!");
+                    return;
+                }
+                totalSeconds--;
+                updateDisplay();
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            totalSeconds = 10 * 60;
+            updateDisplay();
+        }
+    </script>
+
+</body>
+</html>

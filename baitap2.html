@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Bài Tập 2 - Form Đăng Ký</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f4f8;
+            margin: 0;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #4f7cff, #2c56d6);
+            color: #fff;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .header p {
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 700px;
+            background: #fff;
+            margin: -40px auto 40px;
+            padding: 30px;
+            border-radius: 8px;
+        }
+
+        h2 {
+            color: #5a6cf3;
+            border-bottom: 3px solid #5a6cf3;
+            padding-bottom: 10px;
+        }
+
+        label {
+            display: block;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        label span {
+            color: red;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .hint {
+            font-size: 14px;
+            color: #555;
+            margin-top: 6px;
+        }
+
+        .checkbox {
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox a {
+            color: #5a6cf3;
+            text-decoration: none;
+        }
+
+        button {
+            margin-top: 30px;
+            padding: 12px;
+            width: 100%;
+            background: #2c56d6;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1f44b5;
+        }
+
+        #message {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        ul {
+            margin-top: 20px;
+            padding-left: 20px;
+        }
+
+        .empty {
+            color: #777;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Bài Tập 2: Form Đăng Ký Người Dùng</h1>
+    <p>Validate form và lưu dữ liệu vào LocalStorage</p>
+</div>
+
+<div class="container">
+    <h2>Form Đăng Ký Tài Khoản</h2>
+
+    <form id="registerForm">
+        <label>Họ và Tên <span>*</span></label>
+        <input type="text" id="name" placeholder="Nhập họ và tên của bạn">
+
+        <label>Email <span>*</span></label>
+        <input type="email" id="email" placeholder="example@email.com">
+
+        <label>Mật Khẩu <span>*</span></label>
+        <input type="password" id="password" placeholder="Nhập mật khẩu">
+        <div class="hint">
+            ✓ Ít nhất 8 ký tự ✓ Có chữ hoa (A-Z) ✓ Có chữ thường (a-z) ✓ Có số (0-9)
+        </div>
+
+        <div class="checkbox">
+            <input type="checkbox" id="terms">
+            <span>Tôi đồng ý với <a href="#">điều khoản và điều kiện</a> <span style="color:red">*</span></span>
+        </div>
+
+        <button type="submit">Đăng Ký Tài Khoản</button>
+        <p id="message"></p>
+    </form>
+
+    <h2>Danh Sách Người Dùng Đã Đăng Ký</h2>
+    <ul id="userList"></ul>
+    <p id="emptyText" class="empty">Chưa có người dùng nào đăng ký</p>
+</div>
+
+<script>
+    const form = document.getElementById("registerForm");
+    const message = document.getElementById("message");
+    const userList = document.getElementById("userList");
+    const emptyText = document.getElementById("emptyText");
+
+    function getUsers() {
+        return JSON.parse(localStorage.getItem("users")) || [];
+    }
+
+    function saveUsers(users) {
+        localStorage.setItem("users", JSON.stringify(users));
+    }
+
+    function renderUsers() {
+        const users = getUsers();
+        userList.innerHTML = "";
+
+        if (users.length === 0) {
+            emptyText.style.display = "block";
+            return;
+        }
+
+        emptyText.style.display = "none";
+        users.forEach(user => {
+            const li = document.createElement("li");
+            li.textContent = `${user.name} - ${user.email}`;
+            userList.appendChild(li);
+        });
+    }
+
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const terms = document.getElementById("terms").checked;
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+        if (!name || !email || !password) {
+            message.textContent = "Vui lòng nhập đầy đủ thông tin!";
+            message.style.color = "red";
+            return;
+        }
+
+        if (!emailRegex.test(email)) {
+            message.textContent = "Email không hợp lệ!";
+            message.style.color = "red";
+            return;
+        }
+
+        if (!passwordRegex.test(password)) {
+            message.textContent = "Mật khẩu không đủ mạnh!";
+            message.style.color = "red";
+            return;
+        }
+
+        if (!terms) {
+            message.textContent = "Bạn phải đồng ý điều khoản!";
+            message.style.color = "red";
+            return;
+        }
+
+        const users = getUsers();
+        users.push({ name, email });
+        saveUsers(users);
+
+        message.textContent = "Đăng ký thành công!";
+        message.style.color = "green";
+
+        form.reset();
+        renderUsers();
+    });
+
+    renderUsers();
+</script>
+
+</body>
+</html>

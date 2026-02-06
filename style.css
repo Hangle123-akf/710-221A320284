@@ -1,0 +1,72 @@
+/* Tổng quan trang web */
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    background-color: #f0f7ff; /* Nền xanh dương cực nhạt */
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Header xanh dương đậm như trong ảnh */
+.about-header {
+    background: linear-gradient(to right, #3b66d4, #2a4dbd);
+    color: white;
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.about-header h1 {
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+
+/* Container chứa nội dung chính */
+.main-container {
+    flex: 1;
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 40px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.section-title-blue {
+    color: #444;
+    border-left: 5px solid #3b66d4;
+    padding-left: 15px;
+    margin-bottom: 20px;
+}
+
+.blue-text {
+    color: #3b66d4;
+    margin-top: 25px;
+}
+
+/* Danh sách dạng bullet point */
+ul {
+    list-style-type: disc;
+    padding-left: 20px;
+    margin-bottom: 20px;
+}
+
+ul li {
+    margin-bottom: 8px;
+}
+
+/* Footer đậm màu */
+.about-footer {
+    background-color: #1a367d;
+    color: white;
+    text-align: right;
+    padding: 30px 50px;
+    margin-top: 40px;
+}
+
+.footer-content p {
+    margin: 5px 0;
+}

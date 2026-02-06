@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh Sách Sản Phẩm Công Nghệ</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+         --bg-color: #e0f2fe; /* xanh dương nhạt */
+            --text-color: #1e293b;
+        }
+
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg-color); color: var(--text-color); padding: 20px; }
+        
+        .search-container { max-width: 800px; margin: 0 auto 40px; text-align: center; }
+        
+        h2 { color: var(--primary-color); margin-bottom: 20px; }
+
+        input { 
+            padding: 12px 20px; 
+            width: 80%; 
+            max-width: 500px;
+            border: 2px solid #cbd5e1; 
+            border-radius: 25px; 
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input:focus { border-color: var(--primary-color); }
+
+        /* Grid Layout Responsive */
+        #product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .product-card {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-card:hover { 
+            transform: translateY(-8px); 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: contain; /* Giữ tỉ lệ ảnh không bị bóp méo */
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+
+        .product-card h3 { font-size: 1.1rem; margin: 10px 0; }
+        
+        .price { 
+            color: #dc2626; 
+            font-weight: bold; 
+            font-size: 1.2rem;
+        }
+
+        .error-msg { 
+            grid-column: 1 / -1; 
+            color: #64748b; 
+            text-align: center; 
+            font-size: 1.2rem;
+            padding: 50px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="search-container">
+    <h2>Cửa Hàng Công Nghệ</h2>
+    <input type="text" id="searchInput" placeholder="Tìm tên sản phẩm (vd: iPhone, MacBook...)">
+</div>
+
+<div id="product-grid"></div>
+
+<script>
+    // 1. Mảng dữ liệu sản phẩm có thêm trường 'image'
+    // Lưu ý: Bạn có thể thay link ảnh bằng file nội bộ (vd: "images/iphone.jpg")
+    const products = [
+        
+        { id: 1, name: "iPhone 15 Pro", price: "28.000.000đ", image: "https://apple.ngocnguyen.vn/cdn/images/202409/goods_img/iphone-15-pro-chinh-hang--like-new-99-P15596-1726996318502.png" },
+        { id: 2, name: "Samsung Galaxy S24", price: "22.000.000đ", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS74bdYvN7_zUvz3XUZTiPuqIGLA1nd3ZvK9Q&s" },
+        { id: 3, name: "MacBook Air M3", price: "30.000.000đ", image: "https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/macbook-air-midnight-select-20220606?wid=904&hei=840&fmt=jpeg&qlt=90&.v=1653084303665" },
+        { id: 4, name: "Sony WH-1000XM5", price: "7.500.000đ", image: "https://img.youtube.com/vi/v6EjmbMgv80/maxresdefault.jpg" },
+        { id: 5, name: "iPad Pro M2", price: "19.000.000đ", image: "https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/ipad-pro-finish-unselect-gallery-1-202212?wid=2560&hei=1440&fmt=p-jpg&qlt=95&.v=1667594162985" }
+    ];
+
+    const grid = document.getElementById('product-grid');
+    const searchInput = document.getElementById('searchInput');
+
+    // 2. Hàm hiển thị sản phẩm
+    function displayProducts(items) {
+        grid.innerHTML = ""; 
+        
+        if (items.length === 0) {
+            grid.innerHTML = `<div class="error-msg">🔍 Rất tiếc, không tìm thấy sản phẩm nào!</div>`;
+            return;
+        }
+
+        items.forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            
+            // Xử lý logic hiển thị
+            card.innerHTML = `
+                <img src="${p.image}" alt="${p.name}">
+                <div>
+                    <h3>${p.name}</h3>
+                    <p class="price">${p.price}</p>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    // 3. Logic tìm kiếm (Xử lý input để tránh injection)
+    searchInput.addEventListener('input', (e) => {
+        // .trim() loại bỏ khoảng trắng dư thừa
+        // .toLowerCase() để tìm kiếm không phân biệt hoa thường
+        const keyword = e.target.value.trim().toLowerCase();
+        
+        const filtered = products.filter(p => 
+            p.name.toLowerCase().includes(keyword)
+        );
+        
+        displayProducts(filtered);
+    });
+
+    // Khởi tạo giao diện lần đầu
+    displayProducts(products);
+</script>
+
+</body>
+</html>

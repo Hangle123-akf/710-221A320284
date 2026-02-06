@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Match Pro - Image Edition</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --dark: #1e293b;
+            --bg: #f8fafc;
+            --accent: #22c55e;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            color: var(--dark);
+        }
+
+        .stats {
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        /* Grid Layout */
+        .memory-game {
+            display: grid;
+            gap: 15px;
+            perspective: 1000px;
+        }
+
+        /* Responsive: 2 cột mobile, 4 cột desktop */
+        @media (max-width: 480px) {
+            .memory-game { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (min-width: 481px) {
+            .memory-game { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        /* Card Style */
+        .card {
+            width: 120px;
+            height: 160px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .card.flip { transform: rotateY(180deg); }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+
+        /* Mặt trước: Chứa hình ảnh */
+        .card-front {
+            background: white;
+            transform: rotateY(180deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-front img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Đảm bảo ảnh lấp đầy thẻ */
+        }
+
+        /* Mặt sau: Hình hoa văn */
+        .card-back {
+            background: var(--dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 4px solid white;
+        }
+
+        /* Pattern cho mặt sau */
+        .card-back::after {
+            content: "?";
+            font-size: 3rem;
+            color: rgba(255,255,255,0.2);
+            font-weight: bold;
+        }
+
+        .card.matched {
+            transform: rotateY(180deg) scale(0.95);
+            opacity: 0.7;
+            cursor: default;
+        }
+
+        #reset-btn {
+            margin-top: 30px;
+            padding: 12px 30px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        #reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Memory Match Pro</h1>
+    <div class="stats">Lượt click: <span id="move-count">0</span></div>
+    
+    <main class="memory-game" id="game-board"></main>
+
+    <button id="reset-btn">Chơi lại</button>
+
+    <script>
+        const board = document.getElementById('game-board');
+        const moveDisplay = document.getElementById('move-count');
+        const resetBtn = document.getElementById('reset-btn');
+
+        // Danh sách ảnh từ Unsplash (4 cặp = 8 ảnh)
+        const images = [
+            'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=200&h=200&fit=crop', // Mèo
+            'https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?w=200&h=200&fit=crop', // Chó
+            'https://images.unsplash.com/photo-1507666405495-423f76bc0b43?w=200&h=200&fit=crop', // Thỏ
+            'https://images.unsplash.com/photo-1438283173091-5df15c38c19c?w=200&h=200&fit=crop'  // Hổ
+        ];
+
+        // Tạo mảng 8 thẻ (mỗi ảnh xuất hiện 2 lần)
+        let cardData = [...images, ...images];
+        let flippedCards = [];
+        let matchedCount = 0;
+        let moves = 0;
+        let isLockBoard = false;
+
+        function initGame() {
+            board.innerHTML = '';
+            moves = 0;
+            matchedCount = 0;
+            moveDisplay.textContent = moves;
+            isLockBoard = false;
+            flippedCards = [];
+
+            // Shuffle bằng thuật toán Fisher-Yates
+            for (let i = cardData.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [cardData[i], cardData[j]] = [cardData[j], cardData[i]];
+            }
+
+            cardData.forEach((imgUrl) => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.dataset.id = imgUrl; // Dùng URL làm ID để so sánh
+                card.innerHTML = `
+                    <div class="card-front"><img src="${imgUrl}" alt="animal"></div>
+                    <div class="card-back"></div>
+                `;
+                card.addEventListener('click', flipCard);
+                board.appendChild(card);
+            });
+        }
+
+        function flipCard() {
+            if (isLockBoard || this === flippedCards[0] || this.classList.contains('matched')) return;
+
+            this.classList.add('flip');
+            flippedCards.push(this);
+
+            if (flippedCards.length === 2) {
+                moves++;
+                moveDisplay.textContent = moves;
+                checkMatch();
+            }
+        }
+
+        function checkMatch() {
+            isLockBoard = true;
+            const [card1, card2] = flippedCards;
+
+            if (card1.dataset.id === card2.dataset.id) {
+                card1.classList.add('matched');
+                card2.classList.add('matched');
+                matchedCount += 2;
+                resetTurn();
+                if (matchedCount === cardData.length) {
+                    setTimeout(() => alert(`🎉 Tuyệt vời! Bạn thắng với ${moves} lượt!`), 500);
+                }
+            } else {
+                setTimeout(() => {
+                    card1.classList.remove('flip');
+                    card2.classList.remove('flip');
+                    resetTurn();
+                }, 1000);
+            }
+        }
+
+        function resetTurn() {
+            flippedCards = [];
+            isLockBoard = false;
+        }
+
+        resetBtn.addEventListener('click', initGame);
+        initGame();
+    </script>
+</body>
+</html>

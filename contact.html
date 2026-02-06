@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liên Hệ - Bài Thi Cuối Kì</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* CSS cập nhật màu nền khung liên hệ */
+        .contact-form-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            /* Đổi sang màu xanh dương nhạt (Light Blue) */
+            background-color: #e3f2fd; 
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            max-width: 100%; /* Cho phép rộng hết khung nhạt */
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #1a367d; /* Chữ xanh đậm cho dễ đọc trên nền nhạt */
+        }
+
+        .form-group input, 
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #bbdefb; /* Viền xanh nhạt hơn */
+            border-radius: 8px;
+            font-size: 1rem;
+            background-color: #ffffff; /* Ô nhập liệu vẫn giữ màu trắng để nổi bật */
+            box-sizing: border-box;
+        }
+
+        .form-group textarea {
+            height: 150px;
+            resize: vertical;
+        }
+
+        .btn-submit {
+            background-color: #3b66d4;
+            color: white;
+            padding: 12px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-submit:hover {
+            background-color: #2a4dbd;
+        }
+    </style>
+</head>
+<body>
+
+    <header style="background-color: #3b66d4; color: white; text-align: center; padding: 60px 20px;">
+        <h1 style="font-size: 3rem; margin: 0;">Liên Hệ </h1>
+        <p style="font-size: 1.1rem; margin-top: 10px; opacity: 0.9;">Lời Nhắn Của Bạn</p>
+    </header>
+
+    <main style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+        <h2 style="color: #3b66d4; font-size: 1.8rem; border-bottom: 2px solid #3b66d4; padding-bottom: 10px; margin-top: 30px;">Form Liên Hệ</h2>
+
+        <div class="contact-form-container">
+            <form action="#" method="post">
+                <div class="form-group">
+                    <label for="name">Họ và Tên</label>
+                    <input type="text" id="name" name="name" placeholder="Nhập tên của bạn" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="example@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Lời nhắn</label>
+                    <textarea id="message" name="message" placeholder="Nhập nội dung bạn cần liên hệ" required></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit">Gửi lời nhắn</button>
+            </form>
+        </div>
+    </main>
+
+    <footer style="background-color: #1a367d; color: white; text-align: center; padding: 30px 20px; margin-top: 50px;">
+        <p>© Bài thi cuối kì</p>
+        <p>Liên Hệ</p>
+    </footer>
+
+</body>
+</html>
